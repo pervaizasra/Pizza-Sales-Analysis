@@ -1,1 +1,33 @@
+# 🍕 Pizza Sales Analysis & Reporting
 
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)  
+[![Power BI](https://img.shields.io/badge/PowerBI-Report-orange.svg)]()
+
+### 🚀 Project Overview
+This repository contains a complete end-to-end **Pizza Sales Analysis & Reporting** project. It covers:
+
+1. **Data Preparation & Feature Engineering** in Python  
+2. **Interactive Sales Dashboard** built in Power BI  
+3. **Insights Export** for presentations (PowerPoint, PDF)  
+4. A clean, well-commented **Jupyter notebook** for reproducibility
+
+### 📂 Repository Structure
+```text
+Pizza-Sales-Analysis/
+│
+├── README.md  
+|
+├── data/
+│   └── pizza_sales_analysis.csv 
+│
+├── notebooks/
+│   └── Pizza_Sales_Analysis.ipynb 
+│
+├── PowerBI/
+│   ├── Pizza Sales Analysis.pbix 
+│   └── screenshots/                
+│       ├── executive_summary.png  
+│       ├── sales_by_product.png  
+│       ├── sales_by_time.png  
+│      
+  
