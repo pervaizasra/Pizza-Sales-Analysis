@@ -31,3 +31,129 @@ Pizza-Sales-Analysis/
 │       ├── sales_by_time.png  
 │      
   
+## 📗 1. Introduction
+
+> **Why this project?**  
+> In the highly competitive quick-service delivery market, understanding *what*, *when*, and *where* customers buy is crucial. This project transforms raw pizza delivery logs into actionable business intelligence—helping stakeholders optimize menu offerings, staffing, and delivery zones.
+
+**Key Objectives**  
+- Calculate **Total Sales**, **Total Orders**, **Average Order Value**  
+- Visualize **sales trends** by time (day/hour), product, geography, and customer behavior  
+- Build a **Power BI dashboard** that can be easily shared/exported for presentations  
+- Provide a reproducible Python pipeline (Jupyter notebook) for data cleaning and feature engineering  
+
+🗄* 2. Data*
+**2.1 Source & Structure**
+>Original Dataset: https://www.kaggle.com/datasets/akshaygaikwad448/pizza-delivery-data-with-enhanced-features
+Contains one row per order with columns such as:
+
+-Order ID, Restaurant Name, Location, Order Time, Delivery Time, Delivery Duration (min), Pizza Size, Pizza Type
+-Distance (km), Traffic Level,Payment Method, Is Peak Hour, Is Weekend,Estimated Duration (min), Delay (min), Is Delayed, Traffic Impact
+-Restaurant Avg Time
+
+**2.2 Cleaning & Enrichment**
+>Use the Jupyter notebook notebooks/Pizza_Sales_Analysis.ipynb to:
+
+-Parse Order Time and Delivery Time into datetime.
+
+-Drop irrelevant columns (e.g. Topping Density, Pizza Complexity).
+
+-Standardize text fields (Location, Pizza Type, Pizza Size).
+
+**Extract features:**
+
+-Order_Date (YYYY-MM-DD)
+
+-Order_Hour (0–23)
+
+Order_Day (Monday–Sunday)Convert to datetime
+
+-Order_Month (January–December)
+
+-Apply a pricing model to create Sales ($) based on Pizza Size & Pizza Type.
+
+-Bucket distances into ranges (e.g. “0–2 km”, “2–5 km”, etc.).
+
+-Export the cleaned DataFrame to data/pizza_sales_analysis.csv.
+
+🔧 3. Feature Engineering (Notebook Walkthrough)
+
+**Load raw data**
+- df = pd.read_excel('Enhanced_pizza_sell_data_2024-25.xlsx')
+
+** Convert to datetime**
+-df['Order Time'] = pd.to_datetime(df['Order Time'])
+-df['Delivery Time'] = pd.to_datetime(df['Delivery Time'])
+
+**Drop unused columns**
+df.drop(['Topping Density', 'Pizza Complexity', 'Delivery Efficiency (min/km)'], axis=1, inplace=True)
+
+**Clean categorical fields**
+-df['Location'] = df['Location'].str.title().str.strip()
+-df['Pizza Type'] = df['Pizza Type'].str.title().str.strip()
+-df['Pizza Size'] = df['Pizza Size'].str.title().str.strip()
+
+**Extract time features**
+-df['Order_Date'] = df['Order Time'].dt.date
+-df['Order_Hour'] = df['Order Time'].dt.hour
+-df['Order_Day'] = df['Order Time'].dt.day_name()
+-df['Order_Month'] = df['Order Time'].dt.month_name()
+
+**Pricing and sales calculation**
+-pricing = {
+    ('Small', 'Margherita'): 8,  ('Medium', 'Margherita'): 10, ('Large', 'Margherita'): 12,
+    ('Small', 'Pepperoni'): 9, ('Medium', 'Pepperoni'): 11, ('Large', 'Pepperoni'): 13,
+    # … other combos
+}
+df['Sales ($)'] = df.apply(lambda row: pricing.get((row['Pizza Size'], row['Pizza Type']), 0), axis=1)
+
+**Distance buckets**
+-df['Distance Bucket'] = pd.cut(
+    df['Distance (km)'], 
+    bins=[0, 2, 5, 10, 20], 
+    labels=['0–2 km','2–5 km','5–10 km','10–20 km']
+)
+**Export for Power BI**
+-df.to_csv("data/pizza_sales_analysis.csv", index=False)
+
+4.** Power BI Dashboard**
+Open PowerBI/Pizza Sales Analysis.pbix in Power BI Desktop to explore five main report pages:
+
+>4.1 Executive Summary
+**KPI Cards:**
+
+Total Sales = SUM('PizzaSales'[Sales ($)])
+
+Total Orders = COUNTROWS('PizzaSales')
+
+Average Order Value = AVERAGE('PizzaSales'[Sales ($)])
+
+Trend Line: Daily/weekly Order_Date vs SUM(Sales ($))
+
+4.2 **Sales by Product**
+Bar Chart: Combined axis of Pizza Type & Pizza Size vs SUM(Sales ($))
+
+Pie Chart: Pizza Type share of total sales
+
+4.3 **Sales by Time**
+Line Chart: Order_Hour vs SUM(Sales ($))
+
+Heatmap (Matrix):
+
+Rows: Order_Day
+
+Columns: Order_Hour
+
+Values: SUM(Sales ($))
+
+🎯 6. Key Findings (Example)
+Peak Ordering Hours: 6 pm–8 pm generated ~40 % of daily sales.
+
+Top-selling Pizza: Medium Pepperoni accounted for 28 % of total revenue.
+
+Geographic Hotspots: Downtown shows the highest average ticket size.
+
+Distance Impact: Orders from 0–2 km had the fastest deliveries.
+
+This project demonstrates how to transform raw delivery logs into a dynamic BI solution. Stakeholders can use these insights to optimize menu pricing, adjust staffing during peak hours, identify underperforming zones, and improve customer satisfaction.
+
